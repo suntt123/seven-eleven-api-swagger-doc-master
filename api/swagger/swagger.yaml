@@ -1,0 +1,962 @@
+swagger: '2.0'
+info:
+  description: CLiQQ Shop API reference
+  version: v1.1.7
+  title: CLiQQ Shop API
+  # put the contact info for your development or API team
+  contact:
+    email: joshua@offshorly.com
+
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+
+# format of bodies a client can send (Content-Type)
+consumes:
+  - application/json
+# format of the responses to the client (Accepts)
+produces:
+  - application/json
+
+tags:
+- name: api
+  description: API calls
+- name: firebase
+  description: Operation for firebase
+
+# Added by API Auto Mocking Plugin
+# host: virtserver.swaggerhub.com
+# basePath: /Developer9/Cliqqshop/1.0.0
+
+# during dev, should point to your local machine
+host: localhost:10010
+# during prod, should point to your heroku machine
+# host: seven-eleven-api-doc.herokuapp.com
+# basePath prefixes all resource paths 
+basePath: /
+
+schemes:
+ - http
+ - https
+  
+paths:
+  /promos:
+    get:
+      description: "Get all promos active"
+      tags:
+        - api
+      operationId: "GetAllPromos"
+      parameters:
+      - in: "query"
+        name: "offset"
+        description: "Offset for the promo"
+        type: integer
+        format: "int64"
+      - in: "query"
+        name: "limit"
+        description: "Limit for the promo"
+        type: integer
+        format: "int64"
+      - in: "query"
+        name: "productOffset"
+        description: "Offset for the product"
+        type: integer
+        format: "int64"
+      - in: "query"
+        name: "productLimit"
+        description: "Limit for the product"
+        type: integer
+        format: "int64"
+      responses:
+        200:
+          description: "List of all promos"
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/promo'
+      x-swagger-router-controller: "GetAllPromos" 
+      
+  /promos/{code}:
+    get:
+      description: "Get Promo products"
+      tags:
+        - api
+      operationId: "GetPromoById"
+      parameters:
+      - in: path
+        name: "code"
+        description: "Code of the promo"
+        type: integer
+        format: "int64"
+        required: true
+        default: 1
+      - in: "query"
+        name: "offset"
+        description: "Offset"
+        type: integer
+        format: "int64"
+      - in: "query"
+        name: "limit"
+        description: "Limit"
+        type: integer
+        format: "int64"
+      responses:
+        200:
+          description: "Promo and Product list"
+          schema:
+            items:
+              $ref: '#/definitions/promo'
+      x-swagger-router-controller: "GetPromoById"
+  
+  /products/{cliqqCode}:
+    get:
+      description: "Get Products details"
+      tags:
+        - api
+      operationId: "GetProductById"
+      parameters:
+      - in: path
+        name: "cliqqCode"
+        description: "cliqqCode of the Product"
+        type: string
+        required: true
+        default: "000CD"
+      responses:
+        200:
+          description: "Product Details"
+          schema:
+            items:
+              $ref: '#/definitions/product'
+      x-swagger-router-controller: "GetProductById"
+  
+  /loyalty-points/{mobileNumber}:
+    get:
+      description: "Get the current points of the user"
+      tags:
+        - api
+      operationId: "GetPointsById"
+      parameters:
+      - in: path
+        name: "mobileNumber"
+        description: "mobileNumber of the user"
+        type: string
+        required: true
+        default: "09291112223"
+      responses:
+        200:
+          description: "Current Points Details"
+          schema:
+            items:
+              $ref: '#/definitions/wallet'
+      x-swagger-router-controller: "GetPointsById"
+      
+  /wallet-transactions/{mobileNumber}:
+    get:
+      description: "Get the all points transaction of the user"
+      tags:
+        - api
+      operationId: "GetTransactionsById"
+      parameters:
+      - in: path
+        name: "mobileNumber"
+        description: "mobileNumber of the user"
+        type: string
+        required: true
+        default: "09291112223"
+      - in: "query"
+        name: "offset"
+        description: "Offset"
+        type: integer
+        format: "int64"
+      - in: "query"
+        name: "limit"
+        description: "Limit"
+        type: integer
+        format: "int64"
+      responses:
+        200:
+          description: "Successfully reserved an item"
+          schema:
+            items:
+              $ref: '#/definitions/wallet_transactions'
+      x-swagger-router-controller: "GetTransactionsById"
+  
+  /orders:
+    post:
+      description: "Get the all points transaction of the user"
+      tags:
+        - api
+      operationId: "PostOrderReservation"
+      parameters:
+      - in: body
+        name: "order"
+        description: "item to be order"
+        required: true
+        schema:
+          $ref: '#/definitions/order'
+      responses:
+        200:
+          description: "All transaction Details"
+          schema:
+            items:
+              $ref: '#/definitions/order_response'
+      x-swagger-router-controller: "PostOrderReservation"
+  
+  /search/{keyword}:
+    get:
+      description: "Get the all points transaction of the user"
+      tags:
+        - api
+      operationId: "GetSearchKeyword"
+      parameters:
+      - in: path
+        name: "keyword"
+        description: "Keyword to be search"
+        type: string
+        required: true
+        default: "bag"
+      - in: "query"
+        name: "deviceOrigin"
+        description: "deviceOrigin"
+        type: string
+        default: "PWA"
+      - in: "query"
+        name: "offset"
+        description: "Offset"
+        type: integer
+        format: "int64"
+      - in: "query"
+        name: "limit"
+        description: "Limit"
+        type: integer
+        format: "int64"
+      responses:
+        200:
+          description: "Items with keyword"
+          schema:
+            items:
+              $ref: '#/definitions/search_items'
+      x-swagger-router-controller: "GetSearchKeyword"
+      
+  /featured-categories:
+    get:
+      description: "Get the all featured categories"
+      tags:
+        - api
+      operationId: "GetFeaturedCategories"
+      parameters:
+      - in: "query"
+        name: "offset"
+        description: "Offset"
+        type: integer
+        format: "int64"
+      - in: "query"
+        name: "limit"
+        description: "Limit"
+        type: integer
+        format: "int64"
+      responses:
+        200:
+          description: "List of featured categories"
+          schema:
+            items:
+              $ref: '#/definitions/featured_categories'
+      x-swagger-router-controller: "GetFeaturedCategories"
+    
+  /categories:
+    get:
+      description: "Get the all categories"
+      tags:
+        - api
+      operationId: "GetCategories"
+      parameters: 
+      - in: "query"
+        name: "offset"
+        description: "Offset"
+        type: integer
+        format: "int64"
+      - in: "query"
+        name: "limit"
+        description: "Limit"
+        type: integer
+        format: "int64"
+      - in: "query"
+        name: "parent"
+        description: "Filter the categories by parent ID"
+        type: integer
+        format: "int64"
+      - in: "query"
+        name: "brand"
+        description: "Filter the categories associated with the brand"
+        type: integer
+        format: "int64"
+      responses:
+        200:
+          description: "List of all categories"
+          schema:
+            items:
+              $ref: '#/definitions/category_lists'
+      x-swagger-router-controller: "GetCategories"
+  
+  /brands:
+    get:
+      description: "Get the all brands"
+      tags:
+        - api
+      operationId: "GetBrands"
+      parameters:
+      - in: "query"
+        name: "offset"
+        description: "Offset"
+        type: integer
+        format: "int64"
+      - in: "query"
+        name: "limit"
+        description: "Limit"
+        type: integer
+        format: "int64"
+      - in: "query"
+        name: "category"
+        description: "Filter the brands by category"
+        type: integer
+        format: "int64"
+      responses:
+        200:
+          description: "List of all brands"
+          schema:
+            items:
+              $ref: '#/definitions/brands'
+      x-swagger-router-controller: "GetBrands"
+  
+  /categories/{code}:
+    get:
+      description: "Get Products of the category"
+      tags:
+        - api
+      operationId: "GetProductByCategory"
+      parameters:
+      - in: path
+        name: "code"
+        description: "Code of the category"
+        type: string
+        required: true
+        default: "10"
+      - in: "query"
+        name: "offset"
+        description: "Offset"
+        type: integer
+        format: "int64"
+      - in: "query"
+        name: "limit"
+        description: "Limit"
+        type: integer
+        format: "int64"
+      - in: "query"
+        name: "brands"
+        description: "Brands filter for the category"
+        type: array
+        collectionFormat: csv
+        items:
+          type: string
+      responses:
+        200:
+          description: "List of Products for the category"
+          schema:
+            items:
+              $ref: '#/definitions/product_categories'
+      x-swagger-router-controller: "GetProductByCategory"
+  
+  /brands/{code}:
+    get:
+      description: "Get Products of the brand"
+      tags:
+        - api
+      operationId: "GetProductByBrand"
+      parameters:
+      - in: path
+        name: "code"
+        description: "Code of the brand"
+        type: string
+        required: true
+        default: "10"
+      - in: "query"
+        name: "offset"
+        description: "Offset"
+        type: integer
+        format: "int64"
+      - in: "query"
+        name: "limit"
+        description: "Limit"
+        type: integer
+        format: "int64"
+      - in: "query"
+        name: "category"
+        type: string
+        description: "Category filter for this brand"
+      responses:
+        200:
+          description: "List of Products for the brand"
+          schema:
+            items:
+              $ref: '#/definitions/product_brands'
+      x-swagger-router-controller: "GetProductByBrand"
+      
+  /firebase-realtime-db/transactions/{mobileNumber}/{trackingNumber}:
+    put:
+      description: "Realtime update for firebase"
+      tags:
+        - firebase
+      operationId: "PutRealtimeDB"
+      parameters:
+      - in: path
+        name: "mobileNumber"
+        description: "mobileNumber"
+        type: string
+        default: "09291112223"
+        required: true
+      - in: path
+        name: "trackingNumber"
+        description: "trackingNumber"
+        type: string
+        default: "403479192638975014"
+        required: true
+      - in: "query"
+        name: "auth"
+        description: "Authentication from Firebase server"
+        type: string
+        default: "D5S9zGA8SsN9J28KMUlCrPGrVhHkXiBjSRSdQ999"
+        required: true
+      - in: body
+        name: "firebasePayload"
+        description: "Payload to be updated on firebase"
+        required: true
+        schema:
+          $ref: '#/definitions/fireabse_payload'
+      responses:
+        200:
+          description: "Successfully updated"
+          schema:
+            items:
+              $ref: '#/definitions/fireabse_payload'
+      x-swagger-router-controller: "PutRealtimeDB"
+      
+  
+definitions:
+  product_brands:
+    type: object
+    properties:
+      productList:
+        type: array
+        items:
+          $ref: '#/definitions/product'
+      totalCount:
+        type: integer
+        description: "Total number of item, required for pagination"
+        default: 1
+              
+  product_categories:
+    type: object
+    properties:
+      productList:
+        type: array
+        items:
+          $ref: '#/definitions/product'
+      totalCount:
+        type: integer
+        description: "Total number of item, required for pagination"
+        default: 1
+    
+  featured_categories:
+    type: object
+    properties:
+      totalCount:
+        type: integer
+        description: "Total number of item, required for pagination"
+        default: 1
+      categoryList:
+        type: array
+        items:
+          $ref: '#/definitions/category'
+  
+  brands:
+    type: object
+    properties:
+      totalCount:
+        type: integer
+        description: "Total number of item, required for pagination"
+        default: 1
+      brandsList:
+        type: array
+        items:
+          $ref: '#/definitions/brand'
+          
+  category_lists:
+    type: object
+    properties:
+      totalCount:
+        type: integer
+        description: "Total number of item, required for pagination"
+        default: 1
+      categoryList:
+        type: array
+        items:
+          $ref: '#/definitions/categories'
+    
+  categories:
+    type: object
+    allOf:
+      - $ref: '#/definitions/category'
+      - type: object
+        properties:
+          children:
+            type: array
+            items:
+              $ref: '#/definitions/category'
+    
+  category:
+    type: "object"
+    properties:
+      categoryCode:
+        type: "string"
+        description: "ID of the category"
+      name:
+        type: "string"
+        description: "Name of the brand"
+      isFeatured:
+        type: "boolean"
+        description: "Flag if item is featured or not"
+      images:
+        type: "array"
+        items:
+          $ref: '#/definitions/image'
+    
+  brand:
+    type: "object"
+    properties:
+      brandCode:
+        type: "integer"
+        format: "int64"
+        description: "ID of the brand"
+      name:
+        type: "string"
+        description: "Name of the brand"
+      isFeatured:
+        type: "boolean"
+        description: "Flag if item is featured or not"
+      images:
+        type: "array"
+        items:
+          $ref: '#/definitions/image'
+  
+  fireabse_payload:
+    type: object
+    properties:
+      claimCode:
+        type: string
+        description: "claim code will be sent once updated"
+        default: "9931-3930-9253"
+      lastUpdated:
+        type: string
+        format: "date-time"
+        description: "Date will be use when the status has changed"
+        default: "2018-01-15T03:42:15.036Z"
+      status:
+        type: string
+        description: "Status of the item"
+        default: "CONFIRMED"
+      points:
+        type: integer
+        description: "Points earned for that transaction. Will only be available if status is Claimed"
+        default: 10
+        
+  search_items:
+    type: object
+    properties:
+      totalCount:
+        type: integer
+        description: "Total number of item, required for pagination"
+        default: 1
+      productList:
+        type: array
+        items:
+          $ref: '#/definitions/product'
+    
+  order_response:
+    type: object
+    properties:
+      transactionId:
+        type: string
+        description: "Transaction ID that will eventually be the tracking Number"
+      sevenConnectRefNum:
+        type: string
+        description: "Reference number that will last 3-digit number will be shown"
+      expiryDate:
+        type: string
+        format: "date-time"
+        description: "Expiration of the item"
+      totalPrice:
+        type: integer
+        description: "Amount of the item"
+      paymentType:
+        type: string
+        description: "Type of payment"
+        enum:
+          - "PREPAID"
+          - "COD"
+          - "POC"
+      mobileNumber:
+        type: string
+        description: "Mobile Number to be used"
+        default: "09291112223"
+      status:
+        type: string
+        description: "Status of the item"
+        default: "RESERVED"
+          
+  order:
+    type: object
+    properties:
+      cliqqCode:
+        type: string
+        description: "CliqqCode of the product to be ordered"
+        default: "000CD"
+      mobileNumber:
+        type: string
+        description: "Mobile Number to be used"
+        default: "09291112223"
+      quantity:
+        type: string
+        description: "Quantity of product"
+        default: "1"
+      deliveryLocationId:
+        type: string
+        description: "storeId if method is Cash on Delivery"
+        default: "0001"
+      points:
+        type: integer
+        description: "Points used if method is Points or Cash"
+        default: 20
+      paymentType:
+        type: string
+        description: "Type of payment if its not Prepaid"
+        enum:
+          - "COD"
+          - "POC"
+      deviceOrigin:
+        type: string
+        description: "defaults to PWA"
+        default: "PWA"
+      totalPrice:
+        type: string
+        description: "for Promo Orders, PWA should send calculated totalPrice"
+        default: "100"
+      promoCode:
+        type: string
+        description: "for Promo Orders, PWA should send promoCode"
+        default: "ABC100"
+      payment:
+        type: array
+        items:
+          allOf:
+            - $ref: '#/definitions/payment_tender_cash'
+            - $ref: '#/definitions/payment_tender_points'
+          
+  payment_tender_cash:
+    type: object
+    properties:
+      tender:
+        type: string
+        description: "Type of Payment"
+        default: 'CASH'
+      value:
+        type: string
+        description: "Amount"
+        default: "100"
+        
+  payment_tender_points:
+    type: object
+    properties:
+      tender:
+        type: string
+        description: "Type of Payment"
+        default: 'POINTS'
+      value:
+        type: string
+        description: "Amount"
+        default: "100"
+    
+  promo:
+    type: object
+    allOf:
+      - $ref: '#/definitions/promo_fragment'
+      - type: object
+        properties:
+          productList:
+            type: array
+            items:
+              $ref: '#/definitions/product'
+          totalCount:
+            type: integer
+            description: "Total number of item, required for pagination"
+            default: 1
+    
+  promo_fragment:
+    type: object
+    properties:
+      id:
+        type: integer
+        description: "Unique ID for the promo"
+      name:
+        type: string
+        description: "Name of the promo"
+        default: "Holiday Promo"
+      endtime:
+        type: string
+        format: "date-time"
+        description: "Will the promo end"
+      images:
+        type: array
+        items:
+          $ref: '#/definitions/image'
+    
+  
+  wallet_transactions:
+    type: object
+    allOf:
+      - $ref: '#/definitions/wallet'
+      - type: object
+        properties:
+          transactions:
+            type: array
+            items:
+              $ref: '#/definitions/transaction'
+          totalCount:
+            type: integer
+            description: "Total number of item, required for pagination"
+            default: 1
+            
+  transaction:
+    type: object
+    properties:
+      product:
+        $ref: '#/definitions/product_transaction_fragment'
+      datetime:
+        type: string
+        format: 'date-time'
+        description: "Date time the transaction happen"
+      points:
+        type: integer
+        description: "Points use for the item"
+      type:
+        type: string
+        enum:
+          - plus
+          - minus
+        
+  product_transaction_fragment:
+    type: object
+    properties:
+      cliqqCode:
+        type: string
+        description: "CliqqCode of the item you use your points for"
+        default: "00CD"
+      name:
+        type: string
+        description: "Name of the item"
+    
+  wallet:
+    type: object
+    properties:
+      currentPoints:
+        type: integer
+        description: "Current Points available"
+        default: 280
+
+  product:
+    type: object
+    allOf:
+      - $ref: '#/definitions/product_association_fragment'
+      - type: object
+        properties:
+          promo:
+            description: "Promo group of the item"
+            items:
+              $ref: '#/definitions/promo_fragment'
+          brand:
+            description: "Brand of the item"
+            items:
+              $ref: '#/definitions/brand'
+          association:
+            type: array
+            description: "List of product association"
+            items:
+              $ref: '#/definitions/product_assocation'
+          gtin:
+            type: string
+            description: "gtin"
+            default: "PSC01J0000003"
+          returnPolicy:
+            type: string
+            description: "Return policy"
+          returnable:
+            type: boolean
+            description: "If item is returnable or not"
+          shortDescription:
+            type: string
+            description: "Short Description of the item"
+          priceList:
+            type: array
+            items:
+              allOf:
+                - $ref: '#/definitions/price'
+                - $ref: '#/definitions/discount'
+                - $ref: '#/definitions/promo_discount'
+          points:
+            $ref: '#/definitions/points'
+          images:
+            type: array
+            items: 
+              $ref: '#/definitions/image'
+              
+  product_assocation:
+    type: object
+    properties:
+      fromData:
+        type: string
+        format: "date"
+        description: "When the item was associated? (Not used)"
+      products:
+        $ref: '#/definitions/product_association_fragment'
+
+  product_association_fragment:
+    type: object
+    properties:
+      cliqqCodes:
+        type: array
+        items:
+          $ref: '#/definitions/cliqqCode'
+      availableQuantity:
+        type: integer
+        description: "Quantity of the item"
+        default: 20
+      longDescription:
+        type: string
+        description: "Description of the item"
+      name:
+        type: string
+        description: "Name of the product"
+      uom:
+        $ref: '#/definitions/uom'
+    
+  uom:
+    type: object
+    properties:
+      name:
+        type: string
+        description: "Size of the item S | M | L"
+        default: "S"
+        enum:
+          - "S"
+          - "M"
+          - "L"
+      type:
+        type: string
+        description: "Right now its just Size"
+        default: "size"
+  
+  points: 
+    type: object
+    properties:
+      multiplier:
+        type: string
+        description: "Multiplier that will be calcuated for Points or Cash"
+        default: "1.3"
+      method:
+        $ref: '#/definitions/points_method_variable'
+  
+  points_method_variable:
+    type: object
+    properties:
+      cod:
+        type: string
+        description: "Cash on Delivery, Assuming Percentage calculation for earning"
+        default: "5"
+      cash:
+        type: string
+        description: "Prepaid, Assuming Percentage calculation for earning"
+        default: "10"
+      poc:
+        type: string
+        description: "Points or Cash, Assuming Percentage calculation for earning"
+        default: "2"
+    
+  price:
+    type: object
+    properties:
+      amount: 
+        type: integer
+        description: "Amount of the item"
+        default: 100
+      currency:
+        type: string
+        description: "Type of currency"
+        default: "PHP"
+  
+  discount:
+    type: object
+    properties:
+      amount: 
+        type: integer
+        description: "Percentage Amount deductable"
+        default: 10
+      currency:
+        type: string
+        description: "Type of currency"
+        default: "DPHP"
+        
+  promo_discount:
+    type: object
+    description: "this will calculate on \"DPHP\" if exist."
+    properties:
+      type: 
+        type: "string"
+        description: "Type either Amount or Percentage"
+        default: "Amount"
+      value: 
+        type: integer
+        description: "Amount that will be deducted from discount"
+        default: 10
+      currency:
+        type: string
+        description: "Type of currency for promo"
+        default: "<PRMO>"
+
+  cliqqCode:
+    type: "object"
+    properties:
+      cliqqCode: 
+        type: "string"
+        description: "Unique cliqq code of the item"
+      agentCode:
+        type: "string"
+        description: "Unique cliqq code of the item"
+        
+  image:
+    type: "object"
+    properties:
+      imageUrl:
+        type: "string"
+        description: "Url of the image"
+        format: "url"
+        default: "https://cliqqshop.img.com/image1.png"
+      imageType:
+        type: "string"
+        default: "PRIMARY"
+        description: "Type of the image PRIMARY | BACKGROUND | SLIDER"
+        enum:
+          - "MAIN"
+          - "PRIMARY"
+          - "BACKGROUND"
+          - "SLIDER"
+          - "NAV_ICON"
+          - "BRAND_LOGO"
